@@ -33,6 +33,9 @@ namespace IRF_Quiz
 
         private int CurrentCorrectAnswer;
         private int CurrentPlayer;
+        private int CountDown;
+        //private bool WaitForAnswer;
+        private int NumOfQuestions;
 
         public Quizes()
         {
@@ -40,8 +43,10 @@ namespace IRF_Quiz
 
             QuizHide();
             cbxCategories.Visible = false;
+            //WaitForAnswer = false;
+            NumOfQuestions = 10;
 
-          //QuizShow();
+            //QuizShow();
         }
 
         private void Quizes_Load_1(object sender, EventArgs e)
@@ -73,7 +78,7 @@ namespace IRF_Quiz
                 CurrentPlayer = item.playerID;
             }
 
-            for (int i = 1171; i < 1172; i++)
+            for (int i = 1171; i < 1182; i++)
             {
                 var question = from x in context.Questions
                                where x.QuestionID.Equals(i)
@@ -100,23 +105,55 @@ namespace IRF_Quiz
 
                 quizQuestions.Add(qq);
 
-                foreach (var item in quizQuestions)
-                {
-                    lblQuestion.Text = item.QuestionText;
-                    lblAnswer1.Text = item.Answer1Text;
-                    lblAnswer2.Text = item.Answer2Text;
-                    lblAnswer3.Text = item.Answer3Text;
-                    CurrentCorrectAnswer = item.AnswerID;
-                    QuizShow();
+                //foreach (var item in quizQuestions)
+                //{
+                //    lblQuestion.Text = item.QuestionText;
+                //    lblAnswer1.Text = item.Answer1Text;
+                //    lblAnswer2.Text = item.Answer2Text;
+                //    lblAnswer3.Text = item.Answer3Text;
+                //    CurrentCorrectAnswer = item.AnswerID;
+                //    QuizShow();
 
-
-                }
+                //    WaitForAnswer = true;
+                //    while (WaitForAnswer)
+                //    {
+                //        //Várok
+                //    }
+                //}
+                //QuizHide();
             }
+            ShowQuestions();
+        }
+
+        private void ShowQuestions()
+        {
+            lblQuestion.Text = quizQuestions[NumOfQuestions - 1].QuestionText;
+            lblAnswer1.Text = quizQuestions[NumOfQuestions - 1].Answer1Text;
+            lblAnswer2.Text = quizQuestions[NumOfQuestions - 1].Answer2Text;
+            lblAnswer3.Text = quizQuestions[NumOfQuestions - 1].Answer3Text;
+            CurrentCorrectAnswer = quizQuestions[NumOfQuestions - 1].AnswerID;
+            QuizShow();
+            CountDown = 15;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            CountDown--;
+            lblCouner.Text = CountDown.ToString();
+            if (CountDown == 0)
+            {
+                lblCouner.Visible = false;
+                NumOfQuestions--;
 
+                if (NumOfQuestions <=1)
+                {
+                    QuizHide();
+                }
+                else
+                {
+                    ShowQuestions();
+                }
+            }
         }
         private void QuizShow()
         {
@@ -218,6 +255,7 @@ namespace IRF_Quiz
             // 
             // timer1
             // 
+            this.timer1.Enabled = true;
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
