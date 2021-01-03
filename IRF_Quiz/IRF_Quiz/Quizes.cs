@@ -40,6 +40,7 @@ namespace IRF_Quiz
 
         public Quizes()
         {
+            quizAnswers.Clear();
             InitializeComponent();
             QuizHide();
             cbxCategories.Visible = false;
@@ -48,6 +49,7 @@ namespace IRF_Quiz
 
         private void Quizes_Load_1(object sender, EventArgs e)
         {
+            context.Quiz.Load();
             context.Players.Load();
             context.Questions.Load();
             context.Answers.Load();
@@ -58,8 +60,6 @@ namespace IRF_Quiz
 
             cbUser.DataSource = context.Players.Local;
             cbUser.DisplayMember = "PlayerName";
-
-            FillUpQuestions();
 
             timer1.Enabled = false;
         }
@@ -171,6 +171,7 @@ namespace IRF_Quiz
                 if (NumOfQuestions <=0)
                 {
                     QuizHide();
+                    WriteToDB();
                 }
                 else
                 {
@@ -179,6 +180,32 @@ namespace IRF_Quiz
                 }
             }
         }
+
+        private void WriteToDB()
+        {
+            foreach (var item in quizAnswers)
+            {
+                Quiz currentA = new Quiz();
+                currentA.GameID = item.GameID;
+                currentA.PlayerFK = item.PlayerID;
+                currentA.QuestionFK = item.QuestionID;
+                currentA.Result = item.Result;
+                currentA.Answer = item.AnswerID;
+                currentA.Date = item.Date;
+
+                context.Quizs.Add(currentA);
+
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
         private void btnAnswer1_Click(object sender, EventArgs e)
         {
             int AnswerNumber = 1;
