@@ -15,6 +15,32 @@ namespace IRF_Quiz
         public Form1()
         {
             InitializeComponent();
+
+            string[] selectorElements = new string[2];
+            selectorElements[0] = "Quiz";
+            selectorElements[1] = "Statisztika";
+
+            cbSelector.DataSource = selectorElements;
         }
+
+        private void cbSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbSelector.Text == "Quiz")
+            {
+                Quizes uc = new Quizes();
+                panel1.Controls.Clear();
+                panel1.Controls.Add(uc);
+                uc.Dock = DockStyle.Fill;
+            }
+            else if (cbSelector.Text == "Statisztika")
+            {
+                Statistics uc = new Statistics();
+                panel1.Controls.Clear();
+                panel1.Controls.Add(uc);
+                uc.Dock = DockStyle.Fill;
+            }
+        }
+
+
     }
 }
