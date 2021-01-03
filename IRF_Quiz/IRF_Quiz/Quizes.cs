@@ -30,23 +30,20 @@ namespace IRF_Quiz
 
         QuizEntities context = new QuizEntities();
         List<QuizQuestions> quizQuestions = new List<QuizQuestions>();
+        List<QuizAnswers> quizAnswers = new List<QuizAnswers>();
 
         private int CurrentCorrectAnswer;
         private int CurrentPlayer;
         private int CountDown;
-        //private bool WaitForAnswer;
         private int NumOfQuestions;
+        private long CurrentGameID;
 
         public Quizes()
         {
             InitializeComponent();
-
             QuizHide();
             cbxCategories.Visible = false;
-            //WaitForAnswer = false;
             NumOfQuestions = 10;
-
-            //QuizShow();
         }
 
         private void Quizes_Load_1(object sender, EventArgs e)
@@ -62,12 +59,18 @@ namespace IRF_Quiz
             cbUser.DataSource = context.Players.Local;
             cbUser.DisplayMember = "PlayerName";
 
+            FillUpQuestions();
+
+            timer1.Enabled = false;
         }
-
-
-
         private void btnStart_Click(object sender, EventArgs e)
         {
+            quizQuestions.Clear();
+            lblResult.Visible = false;
+
+            Random r = new Random();
+            CurrentGameID = r.Next(10000, 99999); //nem biztosított az egyediség -> UUID vagy külön tábla
+
             string playerName = cbUser.SelectedItem.ToString();
             var player = from x in context.Players
                          where x.PlayerName.Equals(playerName)
@@ -78,20 +81,49 @@ namespace IRF_Quiz
                 CurrentPlayer = item.playerID;
             }
 
-            for (int i = 1171; i < 1182; i++)
+            FillUpQuestions();
+            var currentQ = (QuizQuestions)GetCurrentQ();
+            timer1.Enabled = true;
+            ShowQuestions(currentQ);
+        }
+
+        private void FillUpQuestions()
+        {
+            Random r = new Random();
+
+            int[] rndQuestions = new int[NumOfQuestions];
+
+            for (int i = 0; i < rndQuestions.Length; i++)
             {
+                int rInt = r.Next(1171, 2340); //Ha marad kapacitás itt lehet egy első és utolsó ID lekérdezést beépíteni
+                //for (int j = 0; j < i + 1; j++)
+                //{
+                //    if (rndQuestions[j] == rInt)
+                //    {
+                //        return;
+                //        i--;
+                //    }
+                //}
+                rndQuestions[i] = rInt;
+            }
+
+            for (int i = 0; i < rndQuestions.Length; i++)
+            {
+
+                int qID = rndQuestions[i];
+
                 var question = from x in context.Questions
-                               where x.QuestionID.Equals(i)
-                               select new { QuestionText = x.QuestionText };
+                               where x.QuestionID.Equals(qID)
+                               select new { QuestionID = x.QuestionID, QuestionText = x.QuestionText };
                 var answer = from x in context.Answers
-                               where x.QuestionID.Equals(i)
-                               select new { Answer1 = x.A1Text, Answer2 = x.A2Text, Answer3 = x.A3Text, Solution = x.CorrectAnswer  };
+                             where x.QuestionID.Equals(qID)
+                             select new { Answer1 = x.A1Text, Answer2 = x.A2Text, Answer3 = x.A3Text, Solution = x.CorrectAnswer };
 
                 QuizQuestions qq = new QuizQuestions();
-                qq.QuestionText = question.ToString();
 
                 foreach (var item in question)
                 {
+                    qq.QuestionID = item.QuestionID;
                     qq.QuestionText = item.QuestionText;
                 }
 
@@ -104,34 +136,27 @@ namespace IRF_Quiz
                 }
 
                 quizQuestions.Add(qq);
-
-                //foreach (var item in quizQuestions)
-                //{
-                //    lblQuestion.Text = item.QuestionText;
-                //    lblAnswer1.Text = item.Answer1Text;
-                //    lblAnswer2.Text = item.Answer2Text;
-                //    lblAnswer3.Text = item.Answer3Text;
-                //    CurrentCorrectAnswer = item.AnswerID;
-                //    QuizShow();
-
-                //    WaitForAnswer = true;
-                //    while (WaitForAnswer)
-                //    {
-                //        //Várok
-                //    }
-                //}
-                //QuizHide();
             }
-            ShowQuestions();
         }
 
-        private void ShowQuestions()
+        private object GetCurrentQ()
         {
-            lblQuestion.Text = quizQuestions[NumOfQuestions - 1].QuestionText;
-            lblAnswer1.Text = quizQuestions[NumOfQuestions - 1].Answer1Text;
-            lblAnswer2.Text = quizQuestions[NumOfQuestions - 1].Answer2Text;
-            lblAnswer3.Text = quizQuestions[NumOfQuestions - 1].Answer3Text;
-            CurrentCorrectAnswer = quizQuestions[NumOfQuestions - 1].AnswerID;
+            int index = NumOfQuestions - 1;
+            var currentQ = quizQuestions.ElementAt(index);
+            return currentQ;
+        }
+
+        private void ShowQuestions(QuizQuestions currentQ)
+        {
+            lblResult.Visible = false;
+
+            NumOfQuestions--;
+
+            lblQuestion.Text = currentQ.QuestionText;
+            lblAnswer1.Text = currentQ.Answer1Text;
+            lblAnswer2.Text = currentQ.Answer2Text;
+            lblAnswer3.Text = currentQ.Answer3Text;
+            CurrentCorrectAnswer = currentQ.AnswerID;
             QuizShow();
             CountDown = 15;
         }
@@ -140,20 +165,72 @@ namespace IRF_Quiz
         {
             CountDown--;
             lblCouner.Text = CountDown.ToString();
-            if (CountDown == 0)
+            if (CountDown <= 0)
             {
                 lblCouner.Visible = false;
-                NumOfQuestions--;
-
-                if (NumOfQuestions <=1)
+                if (NumOfQuestions <=0)
                 {
                     QuizHide();
                 }
                 else
                 {
-                    ShowQuestions();
+                    var currentQ = (QuizQuestions)GetCurrentQ();
+                    ShowQuestions(currentQ);
                 }
             }
+        }
+        private void btnAnswer1_Click(object sender, EventArgs e)
+        {
+            int AnswerNumber = 1;
+            bool isItRight = IsItRight(AnswerNumber);
+            StoreAnswer(isItRight, AnswerNumber);
+            CountDown = 0;
+        }
+
+        private bool IsItRight(int answerNumber)
+        {
+            if (CurrentCorrectAnswer == answerNumber)
+            {
+                lblResult.Text = "Helyes";
+                lblResult.Visible = true;
+                return true;
+            }
+            else
+            {
+                lblResult.Text = "Rossz";
+                lblResult.Visible = true;
+                return false;
+            }
+        }
+
+        private void StoreAnswer(bool isItRight, int answerNumber)
+        {
+            QuizAnswers qa = new QuizAnswers();
+            qa.AnswerID = answerNumber;
+            qa.Date = DateTime.Today;
+            qa.GameID = CurrentGameID;
+            qa.PlayerID = CurrentPlayer;
+            qa.QuestionID = quizQuestions[NumOfQuestions].QuestionID;
+            qa.Result = isItRight;
+            qa.AnswerID = answerNumber;
+
+            quizAnswers.Add(qa);
+        }
+
+        private void btnAnswer2_Click(object sender, EventArgs e)
+        {
+            int AnswerNumber = 2;
+            bool isItRight = IsItRight(AnswerNumber);
+            StoreAnswer(isItRight, AnswerNumber);
+            CountDown = 0;
+        }
+
+        private void btnAnswer3_Click(object sender, EventArgs e)
+        {
+            int AnswerNumber = 3;
+            bool isItRight = IsItRight(AnswerNumber);
+            StoreAnswer(isItRight, AnswerNumber);
+            CountDown = 0;
         }
         private void QuizShow()
         {
@@ -307,6 +384,7 @@ namespace IRF_Quiz
             this.btnAnswer1.TabIndex = 10;
             this.btnAnswer1.Text = "Válasz";
             this.btnAnswer1.UseVisualStyleBackColor = true;
+            this.btnAnswer1.Click += new System.EventHandler(this.btnAnswer1_Click);
             // 
             // btnAnswer2
             // 
@@ -316,6 +394,7 @@ namespace IRF_Quiz
             this.btnAnswer2.TabIndex = 11;
             this.btnAnswer2.Text = "Válasz";
             this.btnAnswer2.UseVisualStyleBackColor = true;
+            this.btnAnswer2.Click += new System.EventHandler(this.btnAnswer2_Click);
             // 
             // btnAnswer3
             // 
@@ -325,6 +404,7 @@ namespace IRF_Quiz
             this.btnAnswer3.TabIndex = 12;
             this.btnAnswer3.Text = "Válasz";
             this.btnAnswer3.UseVisualStyleBackColor = true;
+            this.btnAnswer3.Click += new System.EventHandler(this.btnAnswer3_Click);
             // 
             // lblResult
             // 

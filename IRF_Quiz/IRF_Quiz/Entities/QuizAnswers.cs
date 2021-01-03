@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace IRF_Quiz.Entities
 {
-    class QuizQuestions
+    class QuizAnswers
     {
+        public long GameID { get; set; }
+        public int PlayerID { get; set; }
         public long QuestionID { get; set; }
-        public string QuestionText { get; set; }
-        public string Answer1Text { get; set; }
-        public string Answer2Text { get; set; }
-        public string Answer3Text { get; set; }
+        public bool Result { get; set; }
         public int AnswerID { get; set; }
-    }
+        public DateTime Date { get; set; }
+    } 
 }
