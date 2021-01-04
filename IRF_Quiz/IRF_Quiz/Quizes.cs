@@ -58,8 +58,8 @@ namespace IRF_Quiz
             context.Answers.Load();
             context.Categories.Load();
 
-            cbxCategories.DataSource = context.Categories.Local;
-            cbxCategories.DisplayMember = "CategoryName";
+            //cbxCategories.DataSource = context.Categories.Local;
+            //cbxCategories.DisplayMember = "CategoryName";
 
             cbUser.DataSource = context.Players.Local;
             cbUser.DisplayMember = "PlayerName";
