@@ -9,7 +9,7 @@
           <Key>
             <PropertyRef Name="AnswerID" />
           </Key>
-          <Property Name="AnswerID" Type="bigint" Nullable="false" />
+          <Property Name="AnswerID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="A1Text" Type="nvarchar(max)" Nullable="false" />
           <Property Name="A2Text" Type="nvarchar(max)" Nullable="false" />
           <Property Name="A3Text" Type="nvarchar(max)" Nullable="false" />
@@ -21,21 +21,21 @@
           <Key>
             <PropertyRef Name="CategoryID" />
           </Key>
-          <Property Name="CategoryID" Type="int" Nullable="false" />
+          <Property Name="CategoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CategoryName" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="Player">
           <Key>
             <PropertyRef Name="PlayerID" />
           </Key>
-          <Property Name="PlayerID" Type="int" Nullable="false" />
+          <Property Name="PlayerID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PlayerName" Type="nchar" MaxLength="10" Nullable="false" />
         </EntityType>
         <EntityType Name="Question">
           <Key>
             <PropertyRef Name="QuestionID" />
           </Key>
-          <Property Name="QuestionID" Type="bigint" Nullable="false" />
+          <Property Name="QuestionID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="QuestionText" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CategoryFK" Type="int" Nullable="false" />
         </EntityType>
@@ -43,7 +43,7 @@
           <Key>
             <PropertyRef Name="QuizID" />
           </Key>
-          <Property Name="QuizID" Type="bigint" Nullable="false" />
+          <Property Name="QuizID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="GameID" Type="bigint" Nullable="false" />
           <Property Name="PlayerFK" Type="int" Nullable="false" />
           <Property Name="QuestionFK" Type="bigint" Nullable="false" />
@@ -131,7 +131,7 @@
           <Key>
             <PropertyRef Name="AnswerID" />
           </Key>
-          <Property Name="AnswerID" Type="Int64" Nullable="false" />
+          <Property Name="AnswerID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="A1Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="A2Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="A3Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
@@ -144,7 +144,7 @@
           <Key>
             <PropertyRef Name="CategoryID" />
           </Key>
-          <Property Name="CategoryID" Type="Int32" Nullable="false" />
+          <Property Name="CategoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CategoryName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Questions" Relationship="Self.FK_Question_Category" FromRole="Category" ToRole="Question" />
         </EntityType>
@@ -152,7 +152,7 @@
           <Key>
             <PropertyRef Name="PlayerID" />
           </Key>
-          <Property Name="PlayerID" Type="Int32" Nullable="false" />
+          <Property Name="PlayerID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PlayerName" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Quizs" Relationship="Self.FK_Quiz_Player" FromRole="Player" ToRole="Quiz" />
         </EntityType>
@@ -160,7 +160,7 @@
           <Key>
             <PropertyRef Name="QuestionID" />
           </Key>
-          <Property Name="QuestionID" Type="Int64" Nullable="false" />
+          <Property Name="QuestionID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="QuestionText" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CategoryFK" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Answers" Relationship="Self.FK_Answer_Question" FromRole="Question" ToRole="Answer" />
@@ -171,13 +171,13 @@
           <Key>
             <PropertyRef Name="QuizID" />
           </Key>
-          <Property Name="QuizID" Type="Int64" Nullable="false" />
+          <Property Name="QuizID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="GameID" Type="Int64" Nullable="false" />
           <Property Name="PlayerFK" Type="Int32" Nullable="false" />
           <Property Name="QuestionFK" Type="Int64" Nullable="false" />
           <Property Name="Result" Type="Boolean" Nullable="false" />
           <Property Name="Answer" Type="Int64" Nullable="false" />
-          <Property Name="Date" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Date" Type="DateTime" Nullable="false" />
           <NavigationProperty Name="Player" Relationship="Self.FK_Quiz_Player" FromRole="Quiz" ToRole="Player" />
           <NavigationProperty Name="Question" Relationship="Self.FK_Quiz_Question" FromRole="Quiz" ToRole="Question" />
         </EntityType>
@@ -326,7 +326,6 @@
         <DesignerProperty Name="EnablePluralization" Value="true" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
         <DesignerProperty Name="UseLegacyProvider" Value="false" />
-        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->

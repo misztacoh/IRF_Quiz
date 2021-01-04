@@ -49,7 +49,7 @@ namespace IRF_Quiz
 
         private void Quizes_Load_1(object sender, EventArgs e)
         {
-            context.Quiz.Load();
+            context.Quizs.Load();
             context.Players.Load();
             context.Questions.Load();
             context.Answers.Load();
@@ -71,16 +71,9 @@ namespace IRF_Quiz
             Random r = new Random();
             CurrentGameID = r.Next(10000, 99999); //nem biztosított az egyediség -> UUID vagy külön tábla
 
-            string playerName = cbUser.SelectedItem.ToString();
-            var player = from x in context.Players
-                         where x.PlayerName.Equals(playerName)
-                         select new { playerID = x.PlayerID };
-
-            foreach (var item in player)
-            {
-                CurrentPlayer = item.playerID;
-            }
-
+            var player = (Player)cbUser.SelectedItem;
+            CurrentPlayer = player.PlayerID;
+            
             FillUpQuestions();
             var currentQ = (QuizQuestions)GetCurrentQ();
             timer1.Enabled = true;
@@ -171,6 +164,7 @@ namespace IRF_Quiz
                 if (NumOfQuestions <=0)
                 {
                     QuizHide();
+                    timer1.Enabled = false;
                     WriteToDB();
                 }
                 else
@@ -198,6 +192,7 @@ namespace IRF_Quiz
                 try
                 {
                     context.SaveChanges();
+
                 }
                 catch (Exception ex)
                 {
