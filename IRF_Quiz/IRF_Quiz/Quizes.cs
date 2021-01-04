@@ -9,6 +9,9 @@ using System.Windows.Forms;
 
 namespace IRF_Quiz
 {
+    /// <summary>
+    /// Kérdések forrása: http://napikviz.tutioldal.hu/index.php?kvizkerdesek=valaszok
+    /// </summary>
     public partial class Quizes : UserControl
     {
         private CheckedListBox cbxCategories;
