@@ -14,8 +14,8 @@ namespace IRF_Quiz
     public partial class Statistics : UserControl
     {
         private CheckedListBox cboxPlayers;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart2;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartFalse;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartTrue;
         private DateTimePicker dtpFrom;
         private DateTimePicker dtpTo;
         private CheckedListBox cboxCategories;
@@ -31,6 +31,7 @@ namespace IRF_Quiz
         List<Player> sPlayersList = new List<Player>();
         List<Category> sCategoriesList = new List<Category>();
         List<PlayerColor> sPlayerColors = new List<PlayerColor>();
+        private DataGridView dataGridView1;
         Color seriesColor;
         public Statistics()
         {
@@ -70,80 +71,99 @@ namespace IRF_Quiz
                 pc.pcolorID = selected.PlayerID;
                 pc.Color = GetColor();
                 sPlayerColors.Add(pc);
-                //sPlayersList.Add(selected);
             }
         }
 
         private void DrawCharts()
         {
+            GetValues(false);
+            dataGridView1.DataSource = chartValues;
+            //for (int i = 0; i < sPlayersList.Count; i++)
+            //{
+            //    var col = from x in sPlayerColors
+            //              where x.pcolorID.Equals(sPlayersList[i].PlayerID)
+            //              select new { color = x.Color };
 
-            for (int i = 0; i < sPlayersList.Count; i++)
-            {
-                var col = from x in sPlayerColors
-                          where x.pcolorID.Equals(sPlayersList[i].PlayerID)
-                          select new { color = x.Color };
+            //    foreach (var item in col)
+            //    {
+            //        seriesColor = item.color;
+            //    }
+            //}
 
-                foreach (var item in col)
-                {
-                    seriesColor = item.color;
-                }
 
-                chartValues.Clear();
-                GetValues(true);
 
-                chart2.DataSource = chartValues;
+                //chartFalse.Series[playername].ChartType = SeriesChartType.StepLine;
+                //chartFalse.Series[playername].XValueMember = "Date";
+                //chartFalse.Series[playername].YValueMembers = "Player";
+                //chartFalse.Series[playername].BorderWidth = 1;
+                //chartFalse.Series[playername].Color = seriesColor;
 
-                var series1 = chart1.Series[0];
-                series1.ChartType = SeriesChartType.Line;
-                series1.XValueMember = "Xvalues";
-                series1.YValueMembers = "Yvalues";
-                series1.BorderWidth = 2;
-                series1.Color = Color.FromArgb(255, 255, 255);
+                //chartFalse.Legends[playername].Enabled = true;
 
-                var legend1 = chart1.Legends[0];
-                legend1.Enabled = false;
+                //chartFalse.ChartAreas[playername].AxisX.MajorGrid.Enabled = false;
+                //chartFalse.ChartAreas[playername].AxisY.MajorGrid.Enabled = false;
+                //chartFalse.ChartAreas[playername].AxisY.IsStartedFromZero = false;
 
-                var chartArea1 = chart2.ChartAreas[0];
-                chartArea1.AxisX.MajorGrid.Enabled = false;
-                chartArea1.AxisY.MajorGrid.Enabled = false;
-                chartArea1.AxisY.IsStartedFromZero = false;
+                //chartFalse.DataSource = chartValues;
+                //chartTrue.DataSource = chartValues;
 
-                chartValues.Clear();
-                GetValues(false);
+                //var series = chartFalse.Series[playername];
+                //var series = chartFalse.Series[0];
+                //series.ChartType = SeriesChartType.StepLine;
+                //series.XValueMember = "Date";
+                //series.YValueMembers = "Answers";
+                //series.BorderWidth = 1;
+                //series.Color = seriesColor;
 
-                chart2.DataSource = chartValues;
+                //var legend = chartFalse.Legends[0];
+                //legend.Enabled = false;
 
-                var series2 = chart1.Series[0];
-                series2.ChartType = SeriesChartType.Line;
-                series2.XValueMember = "Xvalues";
-                series2.YValueMembers = "Yvalues";
-                series2.BorderWidth = 2;
-                series2.Color = seriesColor;
+                //var chartArea = chartFalse.ChartAreas[0];
+                //chartArea.AxisX.MajorGrid.Enabled = false;
+                //chartArea.AxisY.MajorGrid.Enabled = false;
+                //chartArea.AxisY.IsStartedFromZero = false;
 
-                var legend2 = chart1.Legends[0];
-                legend2.Enabled = false;
+                //GetValues(true);
 
-                var chartArea2 = chart1.ChartAreas[0];
-                chartArea2.AxisX.MajorGrid.Enabled = false;
-                chartArea2.AxisY.MajorGrid.Enabled = false;
-                chartArea2.AxisY.IsStartedFromZero = false;
-            }
+                //chart2.DataSource = chartValues;
+
+                //var series2 = chart1.Series[0];
+                //series2.ChartType = SeriesChartType.Line;
+                //series2.XValueMember = "Xvalues";
+                //series2.YValueMembers = "Yvalues";
+                //series2.BorderWidth = 2;
+                //series2.Color = seriesColor;
+
+                //var legend2 = chart1.Legends[0];
+                //legend2.Enabled = false;
+
+                //var chartArea2 = chart1.ChartAreas[0];
+                //chartArea2.AxisX.MajorGrid.Enabled = false;
+                //chartArea2.AxisY.MajorGrid.Enabled = false;
+                //chartArea2.AxisY.IsStartedFromZero = false;
+            
         }
 
         private void GetValues(bool v)
         {
-            for (int i = 0; i < sPlayersList.Count; i++)
+            chartValues.Clear();
+
+            foreach (var player in sPlayersList)
             {
+                var playerid = player.PlayerID;
+
                 var answersCount = from x in QuizList
-                                   where x.Result.Equals(v) && x.PlayerFK.Equals(sPlayersList[i].PlayerID)
+                                   where x.Result.Equals(v) && x.PlayerFK == playerid
+                                   orderby x.Date
                                    group x by x.Date into g
-                                   select new { date = g.Key, ans = g.Count(x => x.Result) };
+                                   //select new { date = g.Key, ans = g.Count(x => x.Result) };
+                                   select new { date = g.Key, ans = g.Sum(x => x.Result ? 1 : 1) };
 
                 foreach (var item in answersCount)
                 {
                     ChartValues cv = new ChartValues();
-                    cv.Xvalues = item.date;
-                    cv.Yvalues = item.ans;
+                    cv.Date = item.date;
+                    cv.Answers = item.ans;
                     chartValues.Add(cv);
                 }
             }
@@ -270,8 +290,8 @@ namespace IRF_Quiz
             System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.cboxPlayers = new System.Windows.Forms.CheckedListBox();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.chartFalse = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.chartTrue = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.dtpFrom = new System.Windows.Forms.DateTimePicker();
             this.dtpTo = new System.Windows.Forms.DateTimePicker();
             this.cboxCategories = new System.Windows.Forms.CheckedListBox();
@@ -280,8 +300,10 @@ namespace IRF_Quiz
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.chartFalse)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartTrue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // cboxPlayers
@@ -293,37 +315,37 @@ namespace IRF_Quiz
             this.cboxPlayers.TabIndex = 0;
             this.cboxPlayers.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.cboxPlayers_ItemCheck);
             // 
-            // chart1
+            // chartFalse
             // 
             chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
+            this.chartFalse.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(12, 382);
-            this.chart1.Name = "chart1";
+            this.chartFalse.Legends.Add(legend1);
+            this.chartFalse.Location = new System.Drawing.Point(12, 382);
+            this.chartFalse.Name = "chartFalse";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
-            this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(613, 220);
-            this.chart1.TabIndex = 1;
-            this.chart1.Text = "chart1";
+            this.chartFalse.Series.Add(series1);
+            this.chartFalse.Size = new System.Drawing.Size(613, 220);
+            this.chartFalse.TabIndex = 1;
+            this.chartFalse.Text = "chartFalse";
             // 
-            // chart2
+            // chartTrue
             // 
             chartArea2.Name = "ChartArea1";
-            this.chart2.ChartAreas.Add(chartArea2);
+            this.chartTrue.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
-            this.chart2.Legends.Add(legend2);
-            this.chart2.Location = new System.Drawing.Point(12, 156);
-            this.chart2.Name = "chart2";
+            this.chartTrue.Legends.Add(legend2);
+            this.chartTrue.Location = new System.Drawing.Point(12, 156);
+            this.chartTrue.Name = "chartTrue";
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
             series2.Name = "Series1";
-            this.chart2.Series.Add(series2);
-            this.chart2.Size = new System.Drawing.Size(613, 220);
-            this.chart2.TabIndex = 2;
-            this.chart2.Text = "chart2";
+            this.chartTrue.Series.Add(series2);
+            this.chartTrue.Size = new System.Drawing.Size(613, 220);
+            this.chartTrue.TabIndex = 2;
+            this.chartTrue.Text = "chartTrue";
             // 
             // dtpFrom
             // 
@@ -398,8 +420,17 @@ namespace IRF_Quiz
             this.label5.TabIndex = 10;
             this.label5.Text = "Időszak kezdete";
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(654, 56);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(407, 546);
+            this.dataGridView1.TabIndex = 11;
+            // 
             // Statistics
             // 
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -408,14 +439,15 @@ namespace IRF_Quiz
             this.Controls.Add(this.cboxCategories);
             this.Controls.Add(this.dtpTo);
             this.Controls.Add(this.dtpFrom);
-            this.Controls.Add(this.chart2);
-            this.Controls.Add(this.chart1);
+            this.Controls.Add(this.chartTrue);
+            this.Controls.Add(this.chartFalse);
             this.Controls.Add(this.cboxPlayers);
             this.Name = "Statistics";
-            this.Size = new System.Drawing.Size(646, 619);
+            this.Size = new System.Drawing.Size(1085, 619);
             this.Load += new System.EventHandler(this.Statistics_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartFalse)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartTrue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

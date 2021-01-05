@@ -11,6 +11,5 @@ namespace IRF_Quiz.Entities
     {
         public int pcolorID { get; set; }
         public Color Color { get; set; }
-
     }
 }

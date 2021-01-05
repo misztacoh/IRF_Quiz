@@ -9,8 +9,7 @@ namespace IRF_Quiz.Entities
 {
     class ChartValues
     {
-        public int Yvalues { get; set; }
-        public DateTime Xvalues { get; set; }
-        public Color Color { get; set; }
+        public int Answers { get; set; }
+        public DateTime Date { get; set; }
     }
 }
