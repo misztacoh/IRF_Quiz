@@ -28,6 +28,8 @@ namespace IRF_Quiz
         QuizEntities context = new QuizEntities();
         List<Quiz> QuizList = new List<Quiz>();
         List<ChartValues> chartValues = new List<ChartValues>();
+        List<PlayerMod> sPlayersList = new List<PlayerMod>();
+        List<Category> sCategoriesList = new List<Category>;
 
         public Statistics()
         {
@@ -62,27 +64,10 @@ namespace IRF_Quiz
             {
                 cboxPlayers.SetItemChecked(i, true);
             }
-
-            var quizList = from x in context.Quizs
-                           select x;
-            foreach (var item in quizList)
-            {
-                QuizList.Add(item);
-            }
-
-            DrawCharts();
         }
 
         private void DrawCharts()
         {
-            Color[] colors = new Color[cboxPlayers.CheckedItems.Count];
-
-            for (int i = 0; i < cboxPlayers.CheckedItems.Count; i++)
-            {
-                colors[i] = GetColor();
-            }
-
-
             for (int j = 0; j < 2; j++)
             {
                 chartValues.Clear();
@@ -97,13 +82,13 @@ namespace IRF_Quiz
                     res = false;
                 }
 
-                for (int i = 1; i < cboxPlayers.CheckedItems.Count + 1; i++)
+                for (int i = 0; i < sPlayersList.Count; i++)
                 {
-                    
-                    var answersCount = from x in context.Quizs
-                                      where x.Result.Equals(res) && x.PlayerFK.Equals(i)
-                                      group x by x.Date into g
-                                      select new { date = g.Key, ans = g.Count(x => x.Result) };
+                    var answersCount = from x in QuizList
+                                       where x.Result.Equals(res) && x.PlayerFK.Equals(sPlayersList[i].PlayerID)
+                                       group x by x.Date into g
+                                       select new { date = g.Key, ans = g.Count(x => x.Result) };
+
 
                     foreach (var item in answersCount)
                     {
@@ -112,6 +97,8 @@ namespace IRF_Quiz
                         cv.Yvalues = item.ans;
                         chartValues.Add(cv);
                     }
+
+                    Color seriesColor = sPlayersList[i].Color;
 
                     if (j == 0)
                     {
@@ -122,7 +109,7 @@ namespace IRF_Quiz
                         series.XValueMember = "Xvalues";
                         series.YValueMembers = "Yvalues";
                         series.BorderWidth = 2;
-                        series.Color = colors[i - 1];
+                        series.Color = seriesColor;
 
                         var legend = chart2.Legends[0];
                         legend.Enabled = false;
@@ -141,6 +128,7 @@ namespace IRF_Quiz
                         series.XValueMember = "Xvalues";
                         series.YValueMembers = "Yvalues";
                         series.BorderWidth = 2;
+                        series.Color = seriesColor;
 
                         var legend = chart1.Legends[0];
                         legend.Enabled = false;
@@ -156,22 +144,34 @@ namespace IRF_Quiz
             }
         }
 
-        private Color GetColor()
-        {
-            Random r = new Random();
-            Color randomColor = Color.FromArgb(r.Next(255), r.Next(255), r.Next(255));
-            return randomColor;
-        }
-
         private void cboxPlayers_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             if (e.NewValue == CheckState.Checked)
             {
-                
+                for (int i = 0; i < cboxPlayers.Items.Count; i++)
+                {
+                    if (cboxPlayers.GetItemChecked(i))
+                    {
+                        var selected = (PlayerMod)cboxPlayers.Items[i];
+                        selected.Color = GetColor();
+                        sPlayersList.Add(selected);
+                    }
+                }
+                FillUpQuiz();
+                DrawCharts();
             }
             else if (e.NewValue == CheckState.Unchecked)
             {
-                
+                for (int i = 0; i < cboxPlayers.Items.Count; i++)
+                {
+                    if (cboxPlayers.GetItemChecked(i))
+                    {
+                        var selected = (PlayerMod)cboxPlayers.Items[i];
+                        sPlayersList.Remove(selected);
+                    }
+                }
+                FillUpQuiz();
+                DrawCharts();
             }
         }
 
@@ -179,12 +179,58 @@ namespace IRF_Quiz
         {
             if (e.NewValue == CheckState.Checked)
             {
-                
+                for (int i = 0; i < cboxCategories.Items.Count; i++)
+                {
+                    if (cboxPlayers.GetItemChecked(i))
+                    {
+                        var selected = (Category)cboxCategories.Items[i];
+                        sCategoriesList.Add(selected);
+                    }
+                }
+                FillUpQuiz();
+                DrawCharts();
             }
             else if (e.NewValue == CheckState.Unchecked)
             {
-               
+                for (int i = 0; i < cboxCategories.Items.Count; i++)
+                {
+                    if (cboxPlayers.GetItemChecked(i))
+                    {
+                        var selected = (Category)cboxCategories.Items[i];
+                        sCategoriesList.Remove(selected);
+                    }
+                }
+                FillUpQuiz();
+                DrawCharts();
             }
+        }
+
+        private void FillUpQuiz()
+        {
+            bool[,] selections = new bool[sPlayersList.Count, sCategoriesList.Count];
+
+            for (int i = 0; i < sPlayersList.Count; i++)
+            {
+                for (int j = 0; j < sCategoriesList.Count; j++)
+                {
+                    var quizList = from x in context.Quizs
+                                   where x.PlayerFK.Equals(sPlayersList[i].PlayerID) && x.QuizID.Equals(sCategoriesList[j].CategoryID)
+                                   select x;
+                    foreach (var quiz in quizList)
+                    {
+                        QuizList.Add(quiz);
+                    }
+                }
+            }
+        }
+
+
+
+        private Color GetColor()
+        {
+            Random r = new Random();
+            Color randomColor = Color.FromArgb(r.Next(255), r.Next(255), r.Next(255));
+            return randomColor;
         }
 
         private void InitializeComponent()

@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace IRF_Quiz.Entities
 {
-    class ChartValues
+    class PlayerMod : Player
     {
-        public int Yvalues { get; set; }
-        public DateTime Xvalues { get; set; }
         public Color Color { get; set; }
     }
 }
