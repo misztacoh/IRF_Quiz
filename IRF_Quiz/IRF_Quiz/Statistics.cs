@@ -28,9 +28,10 @@ namespace IRF_Quiz
         QuizEntities context = new QuizEntities();
         List<Quiz> QuizList = new List<Quiz>();
         List<ChartValues> chartValues = new List<ChartValues>();
-        List<PlayerMod> sPlayersList = new List<PlayerMod>();
-        List<Category> sCategoriesList = new List<Category>;
-
+        List<Player> sPlayersList = new List<Player>();
+        List<Category> sCategoriesList = new List<Category>();
+        List<PlayerColor> sPlayerColors = new List<PlayerColor>();
+        Color seriesColor;
         public Statistics()
         {
             InitializeComponent();
@@ -63,6 +64,11 @@ namespace IRF_Quiz
             for (int i = 0; i < cboxPlayers.Items.Count; i++)
             {
                 cboxPlayers.SetItemChecked(i, true);
+                PlayerColor pc = new PlayerColor();
+                var selected = (Player)cboxPlayers.Items[i];
+                pc.pcolorID = selected.PlayerID;
+                pc.Color = GetColor();
+                sPlayerColors.Add(pc);
             }
         }
 
@@ -98,7 +104,14 @@ namespace IRF_Quiz
                         chartValues.Add(cv);
                     }
 
-                    Color seriesColor = sPlayersList[i].Color;
+                    var col = from x in sPlayerColors
+                              where x.pcolorID.Equals(sPlayersList[i].PlayerID)
+                              select new { color = x.Color };
+
+                    foreach (var item in col)
+                    {
+                        seriesColor = item.color;
+                    }
 
                     if (j == 0)
                     {
@@ -152,8 +165,7 @@ namespace IRF_Quiz
                 {
                     if (cboxPlayers.GetItemChecked(i))
                     {
-                        var selected = (PlayerMod)cboxPlayers.Items[i];
-                        selected.Color = GetColor();
+                        var selected = (Player)cboxPlayers.Items[i];
                         sPlayersList.Add(selected);
                     }
                 }
@@ -166,7 +178,7 @@ namespace IRF_Quiz
                 {
                     if (cboxPlayers.GetItemChecked(i))
                     {
-                        var selected = (PlayerMod)cboxPlayers.Items[i];
+                        var selected = (Player)cboxPlayers.Items[i];
                         sPlayersList.Remove(selected);
                     }
                 }

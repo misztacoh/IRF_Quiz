@@ -83,7 +83,7 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\ChartValues.cs" />
-    <Compile Include="Entities\PlayerMod.cs" />
+    <Compile Include="Entities\PlayerColor.cs" />
     <Compile Include="Entities\QuizAnswers.cs" />
     <Compile Include="Entities\QuizQuestions.cs" />
     <Compile Include="Form1.cs">
