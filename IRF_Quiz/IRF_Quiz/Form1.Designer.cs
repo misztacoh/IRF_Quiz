@@ -49,14 +49,14 @@ namespace IRF_Quiz
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Location = new System.Drawing.Point(12, 40);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(776, 481);
+            this.panel1.Size = new System.Drawing.Size(641, 637);
             this.panel1.TabIndex = 1;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 533);
+            this.ClientSize = new System.Drawing.Size(665, 689);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.cbSelector);
             this.Name = "Form1";

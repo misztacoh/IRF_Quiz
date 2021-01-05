@@ -82,6 +82,7 @@
     <Compile Include="Category.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Entities\ChartValues.cs" />
     <Compile Include="Entities\QuizAnswers.cs" />
     <Compile Include="Entities\QuizQuestions.cs" />
     <Compile Include="Form1.cs">
