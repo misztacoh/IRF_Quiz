@@ -42,6 +42,7 @@ namespace IRF_Quiz
             context.Quizs.Load();
             context.Players.Load();
             context.Categories.Load();
+            context.Questions.Load();
 
             cboxCategories.DataSource = context.Categories.Local;
             cboxCategories.DisplayMember = "CategoryName";
@@ -69,90 +70,81 @@ namespace IRF_Quiz
                 pc.pcolorID = selected.PlayerID;
                 pc.Color = GetColor();
                 sPlayerColors.Add(pc);
+                //sPlayersList.Add(selected);
             }
         }
 
         private void DrawCharts()
         {
-            for (int j = 0; j < 2; j++)
+
+            for (int i = 0; i < sPlayersList.Count; i++)
             {
+                var col = from x in sPlayerColors
+                          where x.pcolorID.Equals(sPlayersList[i].PlayerID)
+                          select new { color = x.Color };
+
+                foreach (var item in col)
+                {
+                    seriesColor = item.color;
+                }
+
                 chartValues.Clear();
-                bool res;
+                GetValues(true);
 
-                if (j == 1)
+                chart2.DataSource = chartValues;
+
+                var series1 = chart1.Series[0];
+                series1.ChartType = SeriesChartType.Line;
+                series1.XValueMember = "Xvalues";
+                series1.YValueMembers = "Yvalues";
+                series1.BorderWidth = 2;
+                series1.Color = Color.FromArgb(255, 255, 255);
+
+                var legend1 = chart1.Legends[0];
+                legend1.Enabled = false;
+
+                var chartArea1 = chart2.ChartAreas[0];
+                chartArea1.AxisX.MajorGrid.Enabled = false;
+                chartArea1.AxisY.MajorGrid.Enabled = false;
+                chartArea1.AxisY.IsStartedFromZero = false;
+
+                chartValues.Clear();
+                GetValues(false);
+
+                chart2.DataSource = chartValues;
+
+                var series2 = chart1.Series[0];
+                series2.ChartType = SeriesChartType.Line;
+                series2.XValueMember = "Xvalues";
+                series2.YValueMembers = "Yvalues";
+                series2.BorderWidth = 2;
+                series2.Color = seriesColor;
+
+                var legend2 = chart1.Legends[0];
+                legend2.Enabled = false;
+
+                var chartArea2 = chart1.ChartAreas[0];
+                chartArea2.AxisX.MajorGrid.Enabled = false;
+                chartArea2.AxisY.MajorGrid.Enabled = false;
+                chartArea2.AxisY.IsStartedFromZero = false;
+            }
+        }
+
+        private void GetValues(bool v)
+        {
+            for (int i = 0; i < sPlayersList.Count; i++)
+            {
+                var answersCount = from x in QuizList
+                                   where x.Result.Equals(v) && x.PlayerFK.Equals(sPlayersList[i].PlayerID)
+                                   group x by x.Date into g
+                                   select new { date = g.Key, ans = g.Count(x => x.Result) };
+
+                foreach (var item in answersCount)
                 {
-                    res = true;
-                }
-                else
-                {
-                    res = false;
-                }
-
-                for (int i = 0; i < sPlayersList.Count; i++)
-                {
-                    var answersCount = from x in QuizList
-                                       where x.Result.Equals(res) && x.PlayerFK.Equals(sPlayersList[i].PlayerID)
-                                       group x by x.Date into g
-                                       select new { date = g.Key, ans = g.Count(x => x.Result) };
-
-
-                    foreach (var item in answersCount)
-                    {
-                        ChartValues cv = new ChartValues();
-                        cv.Xvalues = item.date;
-                        cv.Yvalues = item.ans;
-                        chartValues.Add(cv);
-                    }
-
-                    var col = from x in sPlayerColors
-                              where x.pcolorID.Equals(sPlayersList[i].PlayerID)
-                              select new { color = x.Color };
-
-                    foreach (var item in col)
-                    {
-                        seriesColor = item.color;
-                    }
-
-                    if (j == 0)
-                    {
-                        chart2.DataSource = chartValues;
-
-                        var series = chart2.Series[0];
-                        series.ChartType = SeriesChartType.Line;
-                        series.XValueMember = "Xvalues";
-                        series.YValueMembers = "Yvalues";
-                        series.BorderWidth = 2;
-                        series.Color = seriesColor;
-
-                        var legend = chart2.Legends[0];
-                        legend.Enabled = false;
-
-                        var chartArea = chart2.ChartAreas[0];
-                        chartArea.AxisX.MajorGrid.Enabled = false;
-                        chartArea.AxisY.MajorGrid.Enabled = false;
-                        chartArea.AxisY.IsStartedFromZero = false;
-                    }
-                    else if (j == 1)
-                    {
-                        chart1.DataSource = chartValues;
-
-                        var series = chart1.Series[0];
-                        series.ChartType = SeriesChartType.Line;
-                        series.XValueMember = "Xvalues";
-                        series.YValueMembers = "Yvalues";
-                        series.BorderWidth = 2;
-                        series.Color = seriesColor;
-
-                        var legend = chart1.Legends[0];
-                        legend.Enabled = false;
-
-                        var chartArea = chart1.ChartAreas[0];
-                        chartArea.AxisX.MajorGrid.Enabled = false;
-                        chartArea.AxisY.MajorGrid.Enabled = false;
-                        chartArea.AxisY.IsStartedFromZero = false;
-
-
-                    }
+                    ChartValues cv = new ChartValues();
+                    cv.Xvalues = item.date;
+                    cv.Yvalues = item.ans;
+                    chartValues.Add(cv);
                 }
             }
         }
@@ -161,29 +153,65 @@ namespace IRF_Quiz
         {
             if (e.NewValue == CheckState.Checked)
             {
-                for (int i = 0; i < cboxPlayers.Items.Count; i++)
-                {
-                    if (cboxPlayers.GetItemChecked(i))
-                    {
-                        var selected = (Player)cboxPlayers.Items[i];
-                        sPlayersList.Add(selected);
-                    }
-                }
+                Player toAdd = (Player)cboxPlayers.Items[e.Index];
+                sPlayersList.Add(toAdd);
+
                 FillUpQuiz();
                 DrawCharts();
+
+                //for (int i = 0; i < cboxPlayers.Items.Count; i++)
+                //{
+                //    if (cboxPlayers.GetItemChecked(i))
+                //    {
+                //        var selected = (Player)cboxPlayers.Items[i];
+                //        if (!sPlayersList.Contains(selected))
+                //        {
+                //            sPlayersList.Add(selected);
+                //        }
+                //    }
+                //}
             }
             else if (e.NewValue == CheckState.Unchecked)
             {
-                for (int i = 0; i < cboxPlayers.Items.Count; i++)
-                {
-                    if (cboxPlayers.GetItemChecked(i))
-                    {
-                        var selected = (Player)cboxPlayers.Items[i];
-                        sPlayersList.Remove(selected);
-                    }
-                }
+                Player toRemove = (Player)cboxPlayers.Items[e.Index];
+                sPlayersList.RemoveAll(r => r.PlayerID == toRemove.PlayerID);
+
                 FillUpQuiz();
                 DrawCharts();
+
+
+                //for (int i = 0; i < cboxPlayers.Items.Count; i++)
+                //{
+                //    if (cboxPlayers.GetItemChecked(i))
+                //    {
+                //        var selected = (Player)cboxPlayers.Items[i];
+                //        if (sPlayersList.Contains(selected))
+                //        {
+                //            //sPlayersList.RemoveAll(r => r.Equals(selected));
+
+                //            //List<Player> toRemove = sPlayersList.Where(x => x.PlayerID == selected.PlayerID).ToList<Player>;
+                //            var remove = from x in sPlayersList
+                //                          where x.PlayerID == selected.PlayerID
+                //                          select x;
+
+                //            foreach (Player toRemove in remove)
+                //            {
+                //                sPlayersList.Remove(toRemove);
+                //            }
+
+
+                //            //var id = selected.PlayerID;
+                //            //foreach (var item in sPlayersList)
+                //            //{
+                //            //    if (item.PlayerID == id)
+                //            //    {
+                //            //        sPlayersList.Remove(item);
+                //            //    }
+                //            //}
+                //        }
+                //    }
+                //}
+
             }
         }
 
@@ -191,27 +219,15 @@ namespace IRF_Quiz
         {
             if (e.NewValue == CheckState.Checked)
             {
-                for (int i = 0; i < cboxCategories.Items.Count; i++)
-                {
-                    if (cboxPlayers.GetItemChecked(i))
-                    {
-                        var selected = (Category)cboxCategories.Items[i];
-                        sCategoriesList.Add(selected);
-                    }
-                }
+                Category toAdd = (Category)cboxCategories.Items[e.Index];
+                sCategoriesList.Add(toAdd);
                 FillUpQuiz();
                 DrawCharts();
             }
             else if (e.NewValue == CheckState.Unchecked)
             {
-                for (int i = 0; i < cboxCategories.Items.Count; i++)
-                {
-                    if (cboxPlayers.GetItemChecked(i))
-                    {
-                        var selected = (Category)cboxCategories.Items[i];
-                        sCategoriesList.Remove(selected);
-                    }
-                }
+                Category toRemove = (Category)cboxCategories.Items[e.Index];
+                sCategoriesList.RemoveAll(r => r.CategoryID == toRemove.CategoryID);
                 FillUpQuiz();
                 DrawCharts();
             }
@@ -219,24 +235,24 @@ namespace IRF_Quiz
 
         private void FillUpQuiz()
         {
-            bool[,] selections = new bool[sPlayersList.Count, sCategoriesList.Count];
-
-            for (int i = 0; i < sPlayersList.Count; i++)
+            QuizList.Clear();
+            foreach (var player in sPlayersList)
             {
-                for (int j = 0; j < sCategoriesList.Count; j++)
+                foreach (var category in sCategoriesList)
                 {
-                    var quizList = from x in context.Quizs
-                                   where x.PlayerFK.Equals(sPlayersList[i].PlayerID) && x.QuizID.Equals(sCategoriesList[j].CategoryID)
-                                   select x;
-                    foreach (var quiz in quizList)
+                    var playerid = player.PlayerID;
+                    var categoryid = category.CategoryID;
+
+                    var quizes = from x in context.Quizs
+                                 where x.PlayerFK == playerid && x.Question.CategoryFK == categoryid
+                                 select x;
+                    foreach (var item in quizes)
                     {
-                        QuizList.Add(quiz);
+                        QuizList.Add(item);
                     }
                 }
             }
         }
-
-
 
         private Color GetColor()
         {
@@ -371,7 +387,6 @@ namespace IRF_Quiz
             this.label4.Size = new System.Drawing.Size(89, 16);
             this.label4.TabIndex = 9;
             this.label4.Text = "Időszak vége";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // label5
             // 
@@ -406,10 +421,7 @@ namespace IRF_Quiz
 
         }
 
-        private void label4_Click(object sender, EventArgs e)
-        {
 
-        }
 
 
     }
