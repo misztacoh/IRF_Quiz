@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,6 @@ namespace IRF_Quiz
     /// </summary>
     public partial class Quizes : UserControl
     {
-        private CheckedListBox cbxCategories;
         private Splitter splitter1;
         private ComboBox cbUser;
         private Button btnStart;
@@ -39,14 +39,19 @@ namespace IRF_Quiz
         private int CurrentPlayer;
         private int CountDown;
         private int NumOfQuestions;
+        private Label lbltrue;
+        private Label lbltrueCount;
+        private Label lblfalse;
+        private Label lblfalsecounter;
         private long CurrentGameID;
+        private int trueans;
+        private int falseans;
 
         public Quizes()
         {
             quizAnswers.Clear();
             InitializeComponent();
             QuizHide();
-            cbxCategories.Visible = false;
             NumOfQuestions = 10;
         }
 
@@ -58,9 +63,6 @@ namespace IRF_Quiz
             context.Answers.Load();
             context.Categories.Load();
 
-            //cbxCategories.DataSource = context.Categories.Local;
-            //cbxCategories.DisplayMember = "CategoryName";
-
             cbUser.DataSource = context.Players.Local;
             cbUser.DisplayMember = "PlayerName";
 
@@ -68,6 +70,9 @@ namespace IRF_Quiz
         }
         private void btnStart_Click(object sender, EventArgs e)
         {
+            trueans = 0;
+            falseans = 0;
+
             quizQuestions.Clear();
             lblResult.Visible = false;
 
@@ -163,6 +168,9 @@ namespace IRF_Quiz
             lblCouner.Text = CountDown.ToString();
             if (CountDown <= 0)
             {
+                bool isItRight = IsItRight(4);
+                StoreAnswer(isItRight, 4);
+
                 lblCouner.Visible = false;
                 if (NumOfQuestions <=0)
                 {
@@ -217,12 +225,18 @@ namespace IRF_Quiz
             if (CurrentCorrectAnswer == answerNumber)
             {
                 lblResult.Text = "Helyes";
+                lblResult.ForeColor = Color.Green;
+                trueans++;
+                lbltrueCount.Text = trueans.ToString();
                 lblResult.Visible = true;
                 return true;
             }
             else
             {
                 lblResult.Text = "Rossz";
+                lblResult.ForeColor = Color.Red;
+                falseans++;
+                lblfalsecounter.Text = falseans.ToString();
                 lblResult.Visible = true;
                 return false;
             }
@@ -267,6 +281,10 @@ namespace IRF_Quiz
             btnAnswer1.Visible = true;
             btnAnswer2.Visible = true;
             btnAnswer3.Visible = true;
+            lblfalsecounter.Visible = true;
+            lbltrueCount.Visible = true;
+            lbltrue.Visible = true;
+            lblfalse.Visible = true;
         }
 
         private void QuizHide()
@@ -280,11 +298,15 @@ namespace IRF_Quiz
             btnAnswer1.Visible = false;
             btnAnswer2.Visible = false;
             btnAnswer3.Visible = false;
+            lblfalsecounter.Visible = false;
+            lbltrueCount.Visible = false;
+            lbltrue.Visible = false;
+            lblfalse.Visible = false;
+
         }
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.cbxCategories = new System.Windows.Forms.CheckedListBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.cbUser = new System.Windows.Forms.ComboBox();
             this.btnStart = new System.Windows.Forms.Button();
@@ -299,15 +321,11 @@ namespace IRF_Quiz
             this.btnAnswer2 = new System.Windows.Forms.Button();
             this.btnAnswer3 = new System.Windows.Forms.Button();
             this.lblResult = new System.Windows.Forms.Label();
+            this.lbltrue = new System.Windows.Forms.Label();
+            this.lbltrueCount = new System.Windows.Forms.Label();
+            this.lblfalse = new System.Windows.Forms.Label();
+            this.lblfalsecounter = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // cbxCategories
-            // 
-            this.cbxCategories.FormattingEnabled = true;
-            this.cbxCategories.Location = new System.Drawing.Point(161, 20);
-            this.cbxCategories.Name = "cbxCategories";
-            this.cbxCategories.Size = new System.Drawing.Size(192, 94);
-            this.cbxCategories.TabIndex = 0;
             // 
             // splitter1
             // 
@@ -341,7 +359,7 @@ namespace IRF_Quiz
             this.lblCouner.AutoSize = true;
             this.lblCouner.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblCouner.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblCouner.Location = new System.Drawing.Point(597, 4);
+            this.lblCouner.Location = new System.Drawing.Point(584, 20);
             this.lblCouner.Name = "lblCouner";
             this.lblCouner.Size = new System.Drawing.Size(51, 37);
             this.lblCouner.TabIndex = 4;
@@ -435,14 +453,58 @@ namespace IRF_Quiz
             // 
             this.lblResult.AutoSize = true;
             this.lblResult.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblResult.Location = new System.Drawing.Point(29, 464);
+            this.lblResult.Location = new System.Drawing.Point(198, 92);
             this.lblResult.Name = "lblResult";
             this.lblResult.Size = new System.Drawing.Size(78, 25);
             this.lblResult.TabIndex = 13;
             this.lblResult.Text = "Helyes";
             // 
+            // lbltrue
+            // 
+            this.lbltrue.AutoSize = true;
+            this.lbltrue.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbltrue.Location = new System.Drawing.Point(317, 16);
+            this.lbltrue.Name = "lbltrue";
+            this.lbltrue.Size = new System.Drawing.Size(175, 25);
+            this.lbltrue.TabIndex = 14;
+            this.lbltrue.Text = "Helyes válaszok:";
+            // 
+            // lbltrueCount
+            // 
+            this.lbltrueCount.AutoSize = true;
+            this.lbltrueCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbltrueCount.Location = new System.Drawing.Point(498, 16);
+            this.lbltrueCount.Name = "lbltrueCount";
+            this.lbltrueCount.Size = new System.Drawing.Size(24, 25);
+            this.lbltrueCount.TabIndex = 15;
+            this.lbltrueCount.Text = "0";
+            // 
+            // lblfalse
+            // 
+            this.lblfalse.AutoSize = true;
+            this.lblfalse.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblfalse.Location = new System.Drawing.Point(317, 60);
+            this.lblfalse.Name = "lblfalse";
+            this.lblfalse.Size = new System.Drawing.Size(169, 25);
+            this.lblfalse.TabIndex = 16;
+            this.lblfalse.Text = "Rossz válaszok:";
+            // 
+            // lblfalsecounter
+            // 
+            this.lblfalsecounter.AutoSize = true;
+            this.lblfalsecounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblfalsecounter.Location = new System.Drawing.Point(498, 60);
+            this.lblfalsecounter.Name = "lblfalsecounter";
+            this.lblfalsecounter.Size = new System.Drawing.Size(24, 25);
+            this.lblfalsecounter.TabIndex = 17;
+            this.lblfalsecounter.Text = "0";
+            // 
             // Quizes
             // 
+            this.Controls.Add(this.lblfalsecounter);
+            this.Controls.Add(this.lblfalse);
+            this.Controls.Add(this.lbltrueCount);
+            this.Controls.Add(this.lbltrue);
             this.Controls.Add(this.lblResult);
             this.Controls.Add(this.btnAnswer3);
             this.Controls.Add(this.btnAnswer2);
@@ -456,7 +518,6 @@ namespace IRF_Quiz
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.cbUser);
             this.Controls.Add(this.splitter1);
-            this.Controls.Add(this.cbxCategories);
             this.Name = "Quizes";
             this.Size = new System.Drawing.Size(651, 593);
             this.Load += new System.EventHandler(this.Quizes_Load_1);
@@ -464,5 +525,7 @@ namespace IRF_Quiz
             this.PerformLayout();
 
         }
+
+
     }
 }
