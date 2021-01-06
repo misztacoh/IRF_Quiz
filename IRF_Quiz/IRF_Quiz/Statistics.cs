@@ -32,8 +32,8 @@ namespace IRF_Quiz
         List<Player> sPlayersList = new List<Player>();
         List<Category> sCategoriesList = new List<Category>();
         List<PlayerColor> sPlayerColors = new List<PlayerColor>();
-        private DataGridView dataGridView1;
-        private DataGridView dataGridView2;
+        private Label label6;
+        private Label label7;
         Color seriesColor;
         public Statistics()
         {
@@ -316,6 +316,16 @@ namespace IRF_Quiz
             }
         }
 
+        private void dtpFrom_ValueChanged(object sender, EventArgs e)
+        {
+            DrawCharts();
+        }
+
+        private void dtpTo_ValueChanged(object sender, EventArgs e)
+        {
+            DrawCharts();
+        }
+
         private Color GetColor()
         {
             Random r = new Random();
@@ -325,12 +335,12 @@ namespace IRF_Quiz
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.cboxPlayers = new System.Windows.Forms.CheckedListBox();
             this.chartFalse = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chartTrue = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -342,12 +352,10 @@ namespace IRF_Quiz
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.chartFalse)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartTrue)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
             // 
             // cboxPlayers
@@ -361,33 +369,33 @@ namespace IRF_Quiz
             // 
             // chartFalse
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chartFalse.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chartFalse.Legends.Add(legend1);
-            this.chartFalse.Location = new System.Drawing.Point(12, 382);
+            chartArea3.Name = "ChartArea1";
+            this.chartFalse.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.chartFalse.Legends.Add(legend3);
+            this.chartFalse.Location = new System.Drawing.Point(12, 404);
             this.chartFalse.Name = "chartFalse";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartFalse.Series.Add(series1);
-            this.chartFalse.Size = new System.Drawing.Size(613, 220);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chartFalse.Series.Add(series3);
+            this.chartFalse.Size = new System.Drawing.Size(613, 198);
             this.chartFalse.TabIndex = 1;
             this.chartFalse.Text = "chartFalse";
             // 
             // chartTrue
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chartTrue.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chartTrue.Legends.Add(legend2);
-            this.chartTrue.Location = new System.Drawing.Point(12, 156);
+            chartArea4.Name = "ChartArea1";
+            this.chartTrue.ChartAreas.Add(chartArea4);
+            legend4.Name = "Legend1";
+            this.chartTrue.Legends.Add(legend4);
+            this.chartTrue.Location = new System.Drawing.Point(12, 181);
             this.chartTrue.Name = "chartTrue";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartTrue.Series.Add(series2);
-            this.chartTrue.Size = new System.Drawing.Size(613, 220);
+            series4.ChartArea = "ChartArea1";
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chartTrue.Series.Add(series4);
+            this.chartTrue.Size = new System.Drawing.Size(613, 195);
             this.chartTrue.TabIndex = 2;
             this.chartTrue.Text = "chartTrue";
             // 
@@ -397,6 +405,7 @@ namespace IRF_Quiz
             this.dtpFrom.Name = "dtpFrom";
             this.dtpFrom.Size = new System.Drawing.Size(200, 20);
             this.dtpFrom.TabIndex = 3;
+            this.dtpFrom.ValueChanged += new System.EventHandler(this.dtpFrom_ValueChanged);
             // 
             // dtpTo
             // 
@@ -404,6 +413,7 @@ namespace IRF_Quiz
             this.dtpTo.Name = "dtpTo";
             this.dtpTo.Size = new System.Drawing.Size(200, 20);
             this.dtpTo.TabIndex = 4;
+            this.dtpTo.ValueChanged += new System.EventHandler(this.dtpTo_ValueChanged);
             // 
             // cboxCategories
             // 
@@ -464,26 +474,30 @@ namespace IRF_Quiz
             this.label5.TabIndex = 10;
             this.label5.Text = "Időszak kezdete";
             // 
-            // dataGridView1
+            // label6
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(654, 56);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(407, 249);
-            this.dataGridView1.TabIndex = 11;
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(9, 162);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(108, 16);
+            this.label6.TabIndex = 11;
+            this.label6.Text = "Helyes válaszok";
             // 
-            // dataGridView2
+            // label7
             // 
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Location = new System.Drawing.Point(654, 321);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.Size = new System.Drawing.Size(407, 275);
-            this.dataGridView2.TabIndex = 12;
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(9, 385);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(103, 16);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "Rossz válaszok";
             // 
             // Statistics
             // 
-            this.Controls.Add(this.dataGridView2);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -496,18 +510,14 @@ namespace IRF_Quiz
             this.Controls.Add(this.chartFalse);
             this.Controls.Add(this.cboxPlayers);
             this.Name = "Statistics";
-            this.Size = new System.Drawing.Size(1085, 619);
+            this.Size = new System.Drawing.Size(660, 619);
             this.Load += new System.EventHandler(this.Statistics_Load);
             ((System.ComponentModel.ISupportInitialize)(this.chartFalse)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartTrue)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
-
-
 
 
     }
