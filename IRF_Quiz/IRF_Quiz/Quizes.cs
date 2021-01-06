@@ -168,8 +168,21 @@ namespace IRF_Quiz
             lblCouner.Text = CountDown.ToString();
             if (CountDown <= 0)
             {
-                bool isItRight = IsItRight(4);
-                StoreAnswer(isItRight, 4);
+                bool timeout = true;
+
+                foreach (var item in quizAnswers)
+                {
+                    if (item.QuestionID == quizQuestions[NumOfQuestions].QuestionID)
+                    {
+                        timeout = false;
+                    }
+                }
+
+                if (timeout)
+                {
+                    bool isItRight = IsItRight(4);
+                    StoreAnswer(isItRight, 4);
+                }
 
                 lblCouner.Visible = false;
                 if (NumOfQuestions <=0)
