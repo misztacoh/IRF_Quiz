@@ -11,5 +11,9 @@ namespace IRF_Quiz.Entities
     {
         public int Answers { get; set; }
         public DateTime Date { get; set; }
+
+        public int PlayerID { get; set; }
+
+        public bool Result { get; set; }
     }
 }
